@@ -25,26 +25,15 @@ body{font-family:'Cairo',sans-serif;background:#f4f0ff;color:#1a1a2e;direction:r
 .tab{padding:6px 14px;border-radius:16px;border:1.5px solid #c9a0f5;background:transparent;font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer;color:#7B2FBE;font-weight:700;transition:all .15s}
 .tab.active{background:#4B0082;color:#fff;border-color:#4B0082}
 .body{padding:0 14px 20px}
-.ai-section{background:#fff;border:1px solid #e0d0f5;border-radius:12px;padding:14px;margin-bottom:12px}
-.ai-sec-title{color:#4B0082;font-weight:800;font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.member-input-block{margin-bottom:10px}
-.member-label{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.avatar{width:26px;height:26px;border-radius:50%;background:#F0E6FF;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#4B0082;flex-shrink:0}
-.member-name-lbl{font-weight:700;font-size:12px;color:#2d1b4e}
-.member-en-lbl{font-size:10px;color:#aaa}
-textarea{width:100%;border:1px solid #e0d0f5;border-radius:8px;padding:8px 10px;font-family:'Cairo',sans-serif;font-size:12px;color:#333;resize:vertical;min-height:60px;background:#fafafa;transition:border .2s;line-height:1.6}
-.ai-btn{width:100%;padding:10px;background:linear-gradient(135deg,#4B0082,#7B2FBE);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
 .section-hdr{background:#7B2FBE;color:#fff;padding:7px 12px;border-radius:8px 8px 0 0;font-size:11px;font-weight:700}
 .kpi-table{border:1px solid #e0d0f5;border-top:none;border-radius:0 0 8px 8px;overflow:hidden;margin-bottom:10px}
 .kpi-row-hdr{display:grid;grid-template-columns:1fr 62px 62px 62px;background:#F0E6FF;padding:6px 10px;font-size:10px;font-weight:700;color:#4B0082;gap:4px;align-items:center}
 .kpi-row{display:grid;grid-template-columns:1fr 62px 62px 62px;padding:7px 10px;gap:4px;align-items:center;border-top:1px solid #f0e6ff}
+.score-cell{display:flex;flex-direction:column;align-items:center}
+.si{width:44px;height:28px;border:1.5px solid #c9a0f5;border-radius:6px;text-align:center;font-size:13px;font-weight:700;font-family:'Cairo',sans-serif;outline:none;background:#fff;color:#4B0082}
 .total-row{background:#4B0082;display:grid;grid-template-columns:1fr 62px 62px 62px;padding:9px 10px;gap:4px;align-items:center}
 .total-val{text-align:center;color:#fff;font-size:18px;font-weight:800}
-.reasoning-section{background:#fff;border:1px solid #e0d0f5;border-radius:10px;overflow:hidden;margin-bottom:10px}
-.reasoning-hdr{background:#F0E6FF;padding:8px 12px;font-size:11px;font-weight:700;color:#4B0082}
-.reasoning-body{padding:10px 12px}
-.reason-member{font-weight:700;font-size:11px;color:#7B2FBE;margin-bottom:3px}
-.reason-text{font-size:11px;color:#555;line-height:1.7}
+.total-val.top-val{color:#FFD700}
 .track-table{border:1px solid #e0d0f5;border-radius:10px;overflow:hidden}
 .track-hdr-row{background:#4B0082;display:grid;padding:8px 12px;gap:6px;font-size:11px;font-weight:700;color:#C9A0F5}
 .track-data-row{display:grid;padding:8px 12px;gap:6px;border-top:1px solid #f0e6ff;align-items:center}
@@ -56,8 +45,12 @@ textarea{width:100%;border:1px solid #e0d0f5;border-radius:8px;padding:8px 10px;
   <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
     <div>
       <div class="hdr-title">✨ AI-Powered · Marketing & Media</div>
-      <div class="hdr-main">داش بورد أداء الفريق الذكي</div>
-      <div class="hdr-sub">بيانات ثابتة ومحدثة للفريق — ميرنا | Team Lead</div>
+      <div class="hdr-main">داش بورد أداء الفريق التفاعلي</div>
+      <div class="hdr-sub">تعديل يدوي وحفظ تلقائي — ميرنا | Team Lead</div>
+    </div>
+    <div style="display:flex;gap:5px;align-items:center">
+      <select class="sel" id="monthSel"></select>
+      <select class="sel" id="yearSel"><option>2024</option><option selected>2025</option><option>2026</option></select>
     </div>
   </div>
   <div class="cards-row" id="memberCards"></div>
@@ -72,132 +65,142 @@ textarea{width:100%;border:1px solid #e0d0f5;border-radius:8px;padding:8px 10px;
 
 <script>
 const MEMBERS=["ملك","مريم","إسراء"];
-const MEMBER_EN=["Malak","Mariam","Israa"];
 const AV=["م","ر","إ"];
 const MONTHS_AR=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 const KPIS=[
-  {id:1,group:"💡 الأفكار والإبداع",ar:"أفكار جديدة",en:"New Ideas",w:15},
-  {id:2,group:"💡 الأفكار والإبداع",ar:"إبداع المحتوى",en:"Content & Creativity",w:15},
-  {id:3,group:"📣 المسؤولية والحملات",ar:"تحمّل المسؤولية",en:"Campaign Ownership",w:10},
-  {id:4,group:"📣 المسؤولية والحملات",ar:"حل المشاكل",en:"Problem Solving",w:10},
-  {id:5,group:"⚖️ الثبات والتطوير",ar:"ثبات الأداء",en:"Stability",w:10},
-  {id:6,group:"⚖️ الثبات والتطوير",ar:"التعلم والتجديد",en:"Learning",w:10},
-  {id:7,group:"🤝 الاحترافية والتيم",ar:"العمل الجماعي",en:"Teamwork",w:10},
-  {id:8,group:"🤝 الاحترافية والتيم",ar:"التواصل والاستجابة",en:"Communication",w:10},
-  {id:9,group:"🤝 الاحترافية والتيم",ar:"الالترام والسلوك",en:"Commitment",w:10},
+  {id:1,group:"💡 الأفكار والإبداع",ar:"أفكار جديدة",en:"New Ideas"},
+  {id:2,group:"💡 الأفكار والإبداع",ar:"إبداع المحتوى",en:"Content"},
+  {id:3,group:"📣 المسؤولية والحملات",ar:"تحمّل المسؤولية",en:"Ownership"},
+  {id:4,group:"📣 المسؤولية والحملات",ar:"حل المشاكل",en:"Problem Solving"},
+  {id:5,group:"⚖️ الثبات والتطوير",ar:"ثبات الأداء",en:"Stability"},
+  {id:6,group:"⚖️ الثبات والتطوير",ar:"التعلم",en:"Learning"},
+  {id:7,group:"🤝 الاحترافية والتيم",ar:"العمل الجماعي",en:"Teamwork"},
+  {id:8,group:"🤝 الاحترافية والتيم",ar:"التواصل",en:"Communication"},
+  {id:9,group:"🤝 الاحترافية والتيم",ar:"الالتزام",en:"Commitment"},
 ];
 const GROUPS=[...new Set(KPIS.map(k=>k.group))];
+const SK="mirna_interactive_v3";
 
-// --- [هنا تضعين بياناتك الثابتة التي ستظهر للجميع] ---
-let scores = {
-  "1": {"ملك": 9, "مريم": 8, "إسراء": 7},
-  "2": {"ملك": 8, "مريم": 9, "إسراء": 8},
-  "3": {"ملك": 9, "مريم": 7, "إسراء": 8},
-  "4": {"ملك": 8, "مريم": 8, "إسراء": 9},
-  "5": {"ملك": 9, "مريم": 7, "إسراء": 7},
-  "6": {"ملك": 8, "مريم": 8, "إسراء": 8},
-  "7": {"ملك": 9, "مريم": 9, "إسراء": 8},
-  "8": {"ملك": 9, "مريم": 8, "إسراء": 8},
-  "9": {"ملك": 10, "مريم": 9, "إسراء": 9}
-};
-
-let reasoning = {
-  "ملك": "أداء استثنائي في ابتكار أفكار حملات جديدة والتزام تام بالجدول الزمني.",
-  "مريم": "مبدعة جداً في صناعة المحتوى البصري وتحتاج لتعزيز مهارات التواصل قليلاً.",
-  "إسراء": "تطور ملحوظ في حل المشكلات التقنية وسرعة بديهة في التعامل مع الأزمات."
-};
-
-let history = {
-  "2025-05": {"ملك": 81, "مريم": 73, "إسراء": 72, "_month": "مايو", "_year": "2025"}
-};
-// ---------------------------------------------------
-
+let scores={}, history={};
 let curTab="scorecard";
+
+// استرجاع البيانات من الذاكرة
+try {
+    const d = JSON.parse(localStorage.getItem(SK) || "{}");
+    scores = d.scores || {};
+    history = d.history || {};
+} catch(e) {}
+
+function persist() {
+    localStorage.setItem(SK, JSON.stringify({scores, history}));
+}
+
+const monthSel=document.getElementById("monthSel");
+MONTHS_AR.forEach((m,i)=>{
+    const o=document.createElement("option");
+    o.value=i; o.textContent=m;
+    if(i===new Date().getMonth()) o.selected=true;
+    monthSel.appendChild(o);
+});
 
 function getScore(kId,m){return Number(scores[kId]?.[m]||0);}
 function getTotal(m){return KPIS.reduce((s,k)=>s+getScore(k.id,m),0);}
-function topIdx(){const ts=MEMBERS.map(m=>getTotal(m));const mx=Math.max(...ts);return mx>0?ts.indexOf(mx):-1;}
-
-function scColor(v){
-  if(v>=9)return{bg:"#D5F5E3",tc:"#1a7a4a",lbl:"ممتاز"};
-  if(v>=7)return{bg:"#D6EAF8",tc:"#1a5276",lbl:"جيد جداً"};
-  return{bg:"#FDEBD0",tc:"#a04000",lbl:"جيد"};
+function topIdx(){
+    const ts=MEMBERS.map(m=>getTotal(m));
+    const mx=Math.max(...ts);
+    return mx>0?ts.indexOf(mx):-1;
 }
 
 function renderCards(){
-  const top=topIdx();
-  document.getElementById("memberCards").innerHTML=MEMBERS.map((m,i)=>{
-    const t=getTotal(m);const isTop=i===top&&t>0;
-    return`<div class="mcard${isTop?" top":""}">
-      ${isTop?'<div class="top-badge">🏅 نجمة الشهر</div>':''}
-      <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
-        <div class="avatar" style="background:${isTop?"#FFD700":"#c9a0f5"}">${AV[i]}</div>
-        <div class="mcard-name">${m}</div>
-      </div>
-      <div class="mcard-score">${t}<span>/90</span></div>
-      <div class="bar"><div class="bar-fill" style="width:${Math.round((t/90)*100)}%"></div></div>
-    </div>`;
-  }).join("");
+    const top=topIdx();
+    document.getElementById("memberCards").innerHTML=MEMBERS.map((m,i)=>{
+        const t=getTotal(m); const isTop=i===top&&t>0;
+        return`<div class="mcard${isTop?" top":""}">
+            ${isTop?'<div class="top-badge">🏅 نجمة الشهر</div>':''}
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
+                <div class="avatar" style="background:${isTop?"#FFD700":"#c9a0f5"}">${AV[i]}</div>
+                <div class="mcard-name">${m}</div>
+            </div>
+            <div class="mcard-score">${t}<span>/90</span></div>
+            <div class="bar"><div class="bar-fill" style="width:${Math.round((t/90)*100)}%"></div></div>
+        </div>`;
+    }).join("");
 }
 
 function renderScorecard(){
-  const top=topIdx();
-  const totals=MEMBERS.map(m=>getTotal(m));
-  let html=GROUPS.map(g=>{
-    const kpis=KPIS.filter(k=>k.group===g);
-    return`<div class="section-hdr">${g}</div>
-    <div class="kpi-table">
-      <div class="kpi-row-hdr">
-        <div>المعيار | KPI</div>
-        ${MEMBERS.map((m,i)=>`<div style="text-align:center">${m}</div>`).join("")}
-      </div>
-      ${kpis.map(k=>`<div class="kpi-row">
-        <div><div class="kpi-ar">${k.ar}</div><div class="kpi-en">${k.en}</div></div>
-        ${MEMBERS.map(m=>{const v=getScore(k.id,m);const c=scColor(v);
-          return`<div style="text-align:center">
-            <div style="background:${c.bg};color:${c.tc};padding:4px;border-radius:6px;font-weight:700">${v}</div>
-          </div>`;}).join("")}
-      </div>`).join("")}
-    </div>`;
-  }).join("");
+    const top=topIdx();
+    const totals=MEMBERS.map(m=>getTotal(m));
+    let html=GROUPS.map(g=>{
+        const kpis=KPIS.filter(k=>k.group===g);
+        return`<div class="section-hdr">${g}</div>
+        <div class="kpi-table">
+            <div class="kpi-row-hdr">
+                <div>المعيار | KPI</div>
+                ${MEMBERS.map(m=>`<div style="text-align:center">${m}</div>`).join("")}
+            </div>
+            ${kpis.map(k=>`<div class="kpi-row">
+                <div><div class="kpi-ar">${k.ar}</div><div class="kpi-en">${k.en}</div></div>
+                ${MEMBERS.map(m=>{
+                    const v=getScore(k.id,m);
+                    return`<div class="score-cell">
+                        <input type="number" min="0" max="10" value="${v||""}" class="si" 
+                               oninput="setScoreManual(${k.id},'${m}',this.value)">
+                    </div>`;
+                }).join("")}
+            </div>`).join("")}
+        </div>`;
+    }).join("");
 
-  html+=`<div class="reasoning-section">
-    <div class="reasoning-hdr">💬 ملاحظات الإدارة (ميرنا)</div>
-    <div class="reasoning-body">
-      ${MEMBERS.map(m=>`<div style="margin-bottom:10px">
-        <div class="reason-member">${m}</div>
-        <div class="reason-text">${reasoning[m]||"—"}</div>
-      </div>`).join("")}
-    </div>
-  </div>`;
+    html+=`<button style="width:100%;padding:12px;background:#4B0082;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer" onclick="saveMonth()">💾 حفظ الشهر في السجل</button>`;
+    document.getElementById("mainBody").innerHTML=html;
+}
 
-  document.getElementById("mainBody").innerHTML=html;
+function setScoreManual(kId,m,val){
+    const v=Math.min(10,Math.max(0,Number(val)||0));
+    if(!scores[kId]) scores[kId]={};
+    scores[kId][m]=v;
+    persist();
+    renderCards();
+}
+
+function saveMonth(){
+    const key=`${document.getElementById("yearSel").value}-${monthSel.value}`;
+    history[key]={
+        _month: MONTHS_AR[monthSel.value],
+        _year: document.getElementById("yearSel").value
+    };
+    MEMBERS.forEach(m=> history[key][m]=getTotal(m));
+    persist();
+    alert("تم حفظ التقرير في السجل بنجاح!");
 }
 
 function renderTracker(){
-  const keys=Object.keys(history).sort();
-  const cols=`110px ${"1fr ".repeat(MEMBERS.length)}`;
-  let html=`<div class="track-table">
-    <div class="track-hdr-row" style="grid-template-columns:${cols}">
-      <div>الشهر</div>${MEMBERS.map(m=>`<div style="text-align:center">${m}</div>`).join("")}
-    </div>`;
-  keys.forEach((key,idx)=>{
-    const e=history[key];
-    const vs=MEMBERS.map(m=>e[m]||0);
-    html+=`<div class="track-data-row" style="grid-template-columns:${cols}">
-      <div style="font-weight:700;color:#4B0082">${e._month} ${e._year}</div>
-      ${vs.map(v=>`<div style="text-align:center;font-weight:700">${v}</div>`).join("")}
-    </div>`;
-  });
-  html+="</div>";
-  document.getElementById("mainBody").innerHTML=html;
+    const keys=Object.keys(history).sort();
+    if(!keys.length) {
+        document.getElementById("mainBody").innerHTML="<div style='text-align:center;padding:40px;color:#aaa'>لا يوجد سجلات محفوظة بعد</div>";
+        return;
+    }
+    const cols=`110px ${"1fr ".repeat(MEMBERS.length)}`;
+    let html=`<div class="track-table">
+        <div class="track-hdr-row" style="grid-template-columns:${cols}">
+            <div>الشهر</div>${MEMBERS.map(m=>`<div style="text-align:center">${m}</div>`).join("")}
+        </div>`;
+    keys.forEach(key=>{
+        const e=history[key];
+        html+=`<div class="track-data-row" style="grid-template-columns:${cols}">
+            <div style="font-weight:700">${e._month} ${e._year}</div>
+            ${MEMBERS.map(m=>`<div style="text-align:center">${e[m]||0}</div>`).join("")}
+        </div>`;
+    });
+    html+="</div>";
+    document.getElementById("mainBody").innerHTML=html;
 }
 
 function switchTab(tab,el){
-  curTab=tab;
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  el.classList.add("active");
-  tab==="scorecard"?renderScorecard():renderTracker();
+    curTab=tab;
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    el.classList.add("active");
+    tab==="scorecard"?renderScorecard():renderTracker();
 }
 
 renderCards();
